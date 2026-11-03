@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ronald Fabian Moreno Guzman | Portafolio Profesional</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        background: '#030303',
+                        surface: '#0f0f11',
+                        border: '#27272a',
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #030303;
+            color: #fafafa;
+            overflow-x: hidden;
+        }
+
+        /* Aurora Mesh Background */
+        .aurora-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            overflow: hidden;
+            background-color: #030303;
+        }
+
+        .aurora-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.5;
+            mix-blend-mode: screen;
+        }
+
+        .blob-1 {
+            background: #4f46e5; /* Indigo */
+            width: 45vw;
+            height: 45vh;
+            top: -10%;
+            left: -10%;
+            animation: float 20s infinite alternate ease-in-out;
+        }
+
+        .blob-2 {
+            background: #9333ea; /* Purple */
+            width: 55vw;
+            height: 55vh;
+            bottom: -20%;
+            right: -10%;
+            animation: float 25s infinite alternate-reverse ease-in-out;
+        }
+
+        .blob-3 {
+            background: #ec4899; /* Pink */
+            width: 40vw;
+            height: 40vh;
+            top: 30%;
+            left: 30%;
+            animation: float 22s infinite alternate ease-in-out;
+            opacity: 0.3;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(5%, 10%) scale(1.1); }
+            100% { transform: translate(-5%, -5%) scale(0.9); }
+        }
+
+        /* Canvas Background */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.25, 1), background 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(147, 51, 234, 0.5); /* Purple border on hover */
+            box-shadow: 0 8px 32px 0 rgba(147, 51, 234, 0.15);
+            transform: translateY(-6px);
+        }
+
+        /* Scroll Reveal Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s cubic-bezier(0.25, 1, 0.25, 1);
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Text Gradients */
+        .text-gradient {
+            background: linear-gradient(to right, #ffffff, #a1a1aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .text-gradient-accent {
+            background: linear-gradient(to right, #60a5fa, #c084fc, #f472b6); /* Blue to Purple to Pink */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Timeline styles */
+        .timeline-dot {
+            width: 14px;
+            height: 14px;
+            background: #c084fc;
+            border-radius: 50%;
+            position: absolute;
+            left: -7px;
+            top: 6px;
+            box-shadow: 0 0 20px rgba(192, 132, 252, 0.8);
+            border: 2px solid #030303;
+        }
+
+        /* Colorful Glowing Button */
+        .btn-glow {
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .btn-glow::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, #3b82f6, #9333ea, #ec4899, #3b82f6);
+            z-index: -1;
+            background-size: 400%;
+            animation: border-glow 8s linear infinite;
+            border-radius: 9999px;
+            transition: opacity 0.3s ease-in-out;
+            opacity: 0;
+        }
+        .btn-glow:hover::before {
+            opacity: 1;
+        }
+        @keyframes border-glow {
+            0% { background-position: 0 0; }
+            50% { background-position: 400% 0; }
+            100% { background-position: 0 0; }
+        }
+
+        /* Mobile Menu Transition */
+        #mobile-menu {
+            transition: all 0.3s ease-in-out;
+        }
+        .menu-open {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+            pointer-events: auto !important;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-purple-500/30 selection:text-white overflow-x-hidden">
+
+    <!-- Aurora Background -->
+    <div class="aurora-container w-full h-full">
+        <div class="aurora-blob blob-1"></div>
+        <div class="aurora-blob blob-2"></div>
+        <div class="aurora-blob blob-3"></div>
+    </div>
+
+    <!-- Interactive Particle Background -->
+    <canvas id="particle-canvas" class="w-full h-full"></canvas>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 bg-[#030303]/70 backdrop-blur-xl border-b border-white/5 transition-all duration-300">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 md:h-20 flex items-center justify-between">
+            <a href="#" class="text-white font-bold text-lg md:text-xl tracking-tighter flex items-center gap-2 z-50">
+                <span class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500 to-purple-600 flex items-center justify-center text-sm shadow-[0_0_15px_rgba(147,51,234,0.3)]">R</span>
+                RFMG
+            </a>
+            
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-300">
+                <a href="#perfil" class="hover:text-purple-400 transition-colors">Perfil</a>
+                <a href="#experiencia" class="hover:text-purple-400 transition-colors">Experiencia</a>
+                <a href="#educacion" class="hover:text-purple-400 transition-colors">Educación</a>
+                <a href="#habilidades" class="hover:text-purple-400 transition-colors">Habilidades</a>
+                <a href="https://linkedin.com/in/ronald-fabian-moreno-guzman" target="_blank" class="px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-white font-medium hover:bg-white/10 transition-colors flex items-center gap-2 backdrop-blur-sm">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                    Conectar
+                </a>
+            </div>
+
+            <!-- Mobile Hamburger Button -->
+            <button id="mobile-menu-btn" class="md:hidden p-2 text-zinc-300 hover:text-white z-50 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+        </div>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="fixed top-0 left-0 w-full h-screen bg-[#030303]/95 backdrop-blur-2xl flex flex-col items-center justify-center gap-8 opacity-0 pointer-events-none transform -translate-y-4 md:hidden z-40">
+            <a href="#perfil" class="mobile-link text-2xl font-medium text-zinc-300 hover:text-white">Perfil</a>
+            <a href="#experiencia" class="mobile-link text-2xl font-medium text-zinc-300 hover:text-white">Experiencia</a>
+            <a href="#educacion" class="mobile-link text-2xl font-medium text-zinc-300 hover:text-white">Educación</a>
+            <a href="#habilidades" class="mobile-link text-2xl font-medium text-zinc-300 hover:text-white">Habilidades</a>
+            <a href="https://linkedin.com/in/ronald-fabian-moreno-guzman" target="_blank" class="mt-4 px-8 py-3 rounded-full bg-white text-black font-semibold">
+                LinkedIn
+            </a>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main class="w-full max-w-5xl mx-auto px-4 sm:px-6 pt-32 pb-20 flex flex-col gap-24 sm:gap-32">
+        
+        <!-- Hero Section -->
+        <section class="flex flex-col md:flex-row items-center md:items-start gap-10 md:gap-16 pt-10 sm:pt-20">
+            <div class="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs sm:text-sm font-medium mb-6 reveal">
+                    <span class="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
+                    Transformando el Talento y la Cultura
+                </div>
+                
+                <h1 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 reveal reveal-delay-1 w-full leading-[1.1]">
+                    Arquitecto de <br class="hidden sm:block"/> 
+                    <span class="text-gradient-accent">Experiencias.</span>
+                </h1>
+                
+                <p class="text-zinc-400 text-base sm:text-lg md:text-xl max-w-2xl mb-10 reveal reveal-delay-2 leading-relaxed font-light">
+                    Hola, soy <strong class="text-white font-medium">Ronald Fabian Moreno Guzman</strong>. Psicólogo y Especialista en Gestión del Talento e Innovación con +10 años liderando la transformación organizacional. Experto en EX/CX, People Analytics y el desarrollo de equipos de alto rendimiento.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row flex-wrap gap-4 w-full reveal reveal-delay-3">
+                    <a href="#experiencia" class="btn-glow w-full sm:w-auto text-center px-8 py-4 rounded-full bg-white text-black font-semibold hover:bg-zinc-200 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+                        Ver Trayectoria
+                    </a>
+                    <a href="https://wa.me/573105643224" target="_blank" class="w-full sm:w-auto text-center px-8 py-4 rounded-full bg-transparent border border-white/20 text-white font-medium hover:bg-white/10 transition-colors backdrop-blur-md flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.099.824zm-3.423-14.416c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm.029 18.88c-1.161 0-2.305-.292-3.318-.844l-3.677.964.984-3.595c-.607-1.052-.927-2.246-.926-3.468.001-3.825 3.113-6.937 6.937-6.937 3.825 0 6.938 3.112 6.938 6.937 0 3.825-3.113 6.938-6.938 6.938z"/></svg>
+                        WhatsApp
+                    </a>
+                    <a href="mailto:ronaldf18@hotmail.com" class="w-full sm:w-auto text-center px-8 py-4 rounded-full bg-transparent border border-white/20 text-white font-medium hover:bg-white/10 transition-colors backdrop-blur-md">
+                        Email
+                    </a>
+                </div>
+            </div>
+
+            <!-- Profile Image -->
+            <div class="w-64 h-64 sm:w-80 sm:h-80 relative reveal reveal-delay-2 shrink-0 group mx-auto md:mx-0 z-20">
+                <div class="absolute inset-0 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-full blur-2xl opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
+                <div class="relative w-full h-full rounded-full bg-[#0f0f11] border-2 border-white/10 overflow-hidden shadow-2xl flex items-center justify-center">
+                    <img src="Ronald_3.jpg" alt="Ronald Fabian Moreno Guzman" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 z-30" onerror="this.onerror=null; this.src='https://placehold.co/400x400/0f0f11/c084fc?text=RF';">
+                </div>
+            </div>
+        </section>
+
+        <!-- Perfil Profesional Section -->
+        <section id="perfil" class="w-full pt-10">
+            <div class="mb-12 reveal">
+                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Perfil Profesional</h2>
+                <p class="text-zinc-400 text-sm sm:text-base">Mi propósito y visión estratégica.</p>
+            </div>
+            
+            <div class="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-10 reveal relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
+                <p class="text-zinc-300 leading-relaxed sm:leading-loose text-base sm:text-lg font-light relative z-10 text-justify">
+                    Psicólogo, Especialista en Gestión del Talento Humano y Especialista en Productividad e Innovación, con más de 10 años liderando procesos de transformación organizacional, gestión del talento y cultura. Experto en Atracción y retención de talento, desarrollo organizacional (L&D), EX/CX, People analytics y generación de equipos de alto rendimiento, con dominio en Design Thinking, Power BI y automatización de procesos. 
+                    <br><br>
+                    He diseñado modelos innovadores de aprendizaje, gamificación y gestión de proyectos de formación mediados por IA, fortaleciendo la experiencia del empleado, el engagement y la analítica de datos mediante el liderazgo transformacional, pensamiento analítico e innovación.
+                    <br><br>
+                    <strong class="text-white font-medium">Mi Propósito:</strong> Liderar la transformación digital del talento y la cultura organizacional, potenciando la experiencia humana con estrategias data-driven y centradas en las personas.
+                </p>
+            </div>
+        </section>
+
+        <!-- Experiencia Section -->
+        <section id="experiencia" class="w-full pt-10">
+            <div class="mb-12 reveal">
+                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Experiencia Profesional</h2>
+                <p class="text-zinc-400 text-sm sm:text-base">Estrategia humana, innovación y transformación digital.</p>
+            </div>
+
+            <div class="relative border-l border-zinc-800 ml-3 md:ml-4 flex flex-col gap-12">
+                <!-- Item 1 -->
+                <div class="relative pl-6 md:pl-10 reveal">
+                    <div class="timeline-dot bg-purple-500 border-[#030303]"></div>
+                    <div class="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10">
+                        <span class="text-xs font-semibold tracking-wider uppercase text-purple-400 mb-2 block">Feb 2026 - Presente</span>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white mb-1">Coordinador Talento Humano</h3>
+                        <h4 class="text-sm sm:text-md text-zinc-400 mb-4 font-medium">Alianza Educativa</h4>
+                        <p class="text-zinc-400 leading-relaxed text-sm sm:text-base font-light">
+                            Lidero la transformación del modelo de atracción y selección, implementando metodologías por competencias, talent intelligence y optimización del funnel de contratación. Diseño e implemento la estrategia de People Analytics en alianza con la Universidad de los Andes. Lidero la estrategia de Employee Experience (EX) y bienestar organizacional, posicionando el programa "Cuidando a los Cuidadores". Implementé un modelo data-driven integrando Odoo como ERP de talento.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="relative pl-6 md:pl-10 reveal">
+                    <div class="timeline-dot bg-blue-500 border-[#030303]"></div>
+                    <div class="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10">
+                        <span class="text-xs font-semibold tracking-wider uppercase text-blue-400 mb-2 block">Nov 2025 - Ene 2026</span>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white mb-1">OPS Gestor Empresarial - Socios Talento Capital</h3>
+                        <h4 class="text-sm sm:text-md text-zinc-400 mb-4 font-medium">Kuepa</h4>
+                        <p class="text-zinc-400 leading-relaxed text-sm sm:text-base font-light">
+                            Lideré la gestión y analítica de información de talento sobre una base de +14.000 registros, optimizando segmentación y trazabilidad mediante dashboards. Actué como enlace estratégico B2B desarrollando alianzas. Diseñé estrategias de atracción e intermediación laboral, incrementando la cobertura y conversión de usuarios.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="relative pl-6 md:pl-10 reveal">
+                    <div class="timeline-dot bg-pink-500 border-[#030303]"></div>
+                    <div class="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10">
+                        <span class="text-xs font-semibold tracking-wider uppercase text-pink-400 mb-2 block">Sep 2019 - Oct 2025</span>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white mb-1">Jefe de Centro de Empleo y Talento</h3>
+                        <h4 class="text-sm sm:text-md text-zinc-400 mb-4 font-medium">Colsubsidio</h4>
+                        <p class="text-zinc-400 leading-relaxed text-sm sm:text-base font-light">
+                            Lideré el Centro de Empleo gestionando operación y calidad, logrando +3.250 colocaciones efectivas (NPS 94%). Diseñé un modelo de orientación laboral grupal gamificado (top 5 proyectos innovadores 2023). Implementé un programa de aprendizaje de inglés mediado por Inteligencia Artificial y rediseñé el canal de atención virtual optimizando la atención de +10.000 usuarios anuales.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Item 4 -->
+                <div class="relative pl-6 md:pl-10 reveal">
+                    <div class="timeline-dot bg-zinc-400 border-[#030303]"></div>
+                    <div class="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10">
+                        <span class="text-xs font-semibold tracking-wider uppercase text-zinc-400 mb-2 block">Sep 2016 - Oct 2019</span>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white mb-1">Orientador e Intermediador laboral</h3>
+                        <h4 class="text-sm sm:text-md text-zinc-400 mb-4 font-medium">Colsubsidio</h4>
+                        <p class="text-zinc-400 leading-relaxed text-sm sm:text-base font-light">
+                            Diseñé estrategias de formación y orientación bajo Assessment Center y pruebas psicométricas (DISC). Gestioné tableros en Power BI. Experiencia como Analista QA y Conversión Web enfocados en UX. Certificado como Movilizador de Innovación y miembro del Semillero de Transformación Digital.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Item 5 -->
+                <div class="relative pl-6 md:pl-10 reveal">
+                    <div class="timeline-dot bg-zinc-500 border-[#030303]"></div>
+                    <div class="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10">
+                        <span class="text-xs font-semibold tracking-wider uppercase text-zinc-400 mb-2 block">Sep 2015 - Jun 2016</span>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white mb-1">Profesional de Selección</h3>
+                        <h4 class="text-sm sm:text-md text-zinc-400 mb-4 font-medium">Cooperativa Epsifarma - Cepain IPS</h4>
+                        <p class="text-zinc-400 leading-relaxed text-sm sm:text-base font-light">
+                            Gestión integral de procesos de evaluación por competencias en salud a nivel nacional. Implementación de Assessment Center y aplicación de pruebas psicométricas (DISC, 16 PF, CMT). Optimización de la experiencia del candidato (CX).
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Item 6 -->
+                <div class="relative pl-6 md:pl-10 reveal">
+                    <div class="timeline-dot bg-zinc-600 border-[#030303]"></div>
+                    <div class="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10">
+                        <span class="text-xs font-semibold tracking-wider uppercase text-zinc-400 mb-2 block">Jun 2014 - Sep 2015</span>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white mb-1">Profesional de Selección</h3>
+                        <h4 class="text-sm sm:text-md text-zinc-400 mb-4 font-medium">HeOn Health online S.A.</h4>
+                        <p class="text-zinc-400 leading-relaxed text-sm sm:text-base font-light">
+                            Evaluación y reclutamiento de perfiles IT (Java, C#, .NET, Data Warehouse) y arquitectos de desarrollo. Diseño de procesos por competencias, estudios de caso y diagnósticos comportamentales. Certificación en DISC Tims.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Item 7 -->
+                <div class="relative pl-6 md:pl-10 reveal">
+                    <div class="timeline-dot bg-zinc-600 border-[#030303]"></div>
+                    <div class="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10">
+                        <span class="text-xs font-semibold tracking-wider uppercase text-zinc-400 mb-2 block">Jun 2013 - Abr 2014</span>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white mb-1">Psicólogo de Selección</h3>
+                        <h4 class="text-sm sm:text-md text-zinc-400 mb-4 font-medium">ETIB S.A.S</h4>
+                        <p class="text-zinc-400 leading-relaxed text-sm sm:text-base font-light">
+                            Selección de cargos operativos, tácticos y estratégicos. Logro: Capacitador avalado por Transmilenio en relaciones humanas para Operadores Zonales. Generación de diccionarios por competencias.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Item 8 -->
+                <div class="relative pl-6 md:pl-10 reveal">
+                    <div class="timeline-dot bg-zinc-700 border-[#030303]"></div>
+                    <div class="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10">
+                        <span class="text-xs font-semibold tracking-wider uppercase text-zinc-400 mb-2 block">Dic 2012 - Jun 2013</span>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white mb-1">Asistente de Selección</h3>
+                        <h4 class="text-sm sm:text-md text-zinc-400 mb-4 font-medium">Masivo Capital SAS</h4>
+                        <p class="text-zinc-400 leading-relaxed text-sm sm:text-base font-light">
+                            Selección masiva de Operadores de Vehículo (SITP), manejo de indicadores e informes. Capacitado en ERP JD EDWARDS y como Capacitador Avalado por Transmilenio.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Item 9 -->
+                <div class="relative pl-6 md:pl-10 reveal">
+                    <div class="timeline-dot bg-zinc-700 border-[#030303]"></div>
+                    <div class="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10">
+                        <span class="text-xs font-semibold tracking-wider uppercase text-zinc-500 mb-2 block">Ene 2012 - Jun 2012</span>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white mb-1">Asistente Investigador</h3>
+                        <h4 class="text-sm sm:text-md text-zinc-500 mb-4 font-medium">Universidad Piloto de Colombia</h4>
+                        <p class="text-zinc-400 leading-relaxed text-sm sm:text-base font-light">
+                            Investigador en el proyecto "Transformación de espacios públicos". Búsqueda documental, aplicación de encuestas, entrevistas y trabajo de campo en proyectos de intervención urbana en Bogotá.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Educacion Section -->
+        <section id="educacion" class="w-full pt-10">
+            <div class="mb-12 reveal">
+                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Educación & Formación</h2>
+                <p class="text-zinc-400 text-sm sm:text-base">Mi base académica y certificaciones destacadas.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                <!-- Formacion 1 -->
+                <div class="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 reveal flex flex-col h-full">
+                    <div class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-white mb-1">Especialización en Productividad e Innovación</h3>
+                    <p class="text-sm font-medium text-purple-300 mb-4">Universidad Autónoma de Occidente</p>
+                    <p class="text-sm text-zinc-400 font-light leading-relaxed mt-auto">Gerencia de productividad, innovación y administración de empresas (Feb 2024 - May 2025).</p>
+                </div>
+
+                <!-- Formacion 2 -->
+                <div class="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 reveal flex flex-col h-full">
+                    <div class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-white mb-1">Especialista en Gestión Humana</h3>
+                    <p class="text-sm font-medium text-yellow-300 mb-4">Universidad Piloto de Colombia</p>
+                    <p class="text-sm text-zinc-400 font-light leading-relaxed mt-auto">Especialización en gestión estratégica del talento humano en las organizaciones (Ene 2015 - Jun 2016).</p>
+                </div>
+
+                <!-- Formacion 3 -->
+                <div class="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 reveal flex flex-col h-full">
+                    <div class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-white mb-1">Fortalecimiento de Líderes de Alto Desempeño</h3>
+                    <p class="text-sm font-medium text-pink-300 mb-4">Universidad de los Andes</p>
+                    <p class="text-sm text-zinc-400 font-light leading-relaxed mt-auto">Administración y gestión de empresas, desarrollo estratégico (Feb 2024 - May 2025).</p>
+                </div>
+
+                <!-- Formacion 4 -->
+                <div class="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 reveal flex flex-col h-full">
+                    <div class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-white mb-1">Diplomado Management 3.0</h3>
+                    <p class="text-sm font-medium text-blue-300 mb-4">CESA</p>
+                    <p class="text-sm text-zinc-400 font-light leading-relaxed mt-auto">Administración y gestión de empresas (Sep 2023 - Nov 2023).</p>
+                </div>
+
+                <!-- Formacion 5 -->
+                <div class="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 reveal flex flex-col h-full">
+                    <div class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-white mb-1">Diplomado en Transformación Digital</h3>
+                    <p class="text-sm font-medium text-indigo-300 mb-4">Pontificia Universidad Javeriana Cali</p>
+                    <p class="text-sm text-zinc-400 font-light leading-relaxed mt-auto">Estrategias de innovación digital y tecnológica (2020).</p>
+                </div>
+
+                <!-- Formacion 6 -->
+                <div class="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 reveal flex flex-col h-full">
+                    <div class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-white mb-1">Auditor de Recursos Humanos</h3>
+                    <p class="text-sm font-medium text-emerald-300 mb-4">Universidad Piloto de Colombia</p>
+                    <p class="text-sm text-zinc-400 font-light leading-relaxed mt-auto">Gestión de recursos humanos, administración de personal y evaluación de procesos (2016).</p>
+                </div>
+
+                <!-- Formacion 7 -->
+                <div class="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 reveal flex flex-col h-full md:col-span-2">
+                    <div class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-white mb-1">Profesional en Psicología</h3>
+                    <p class="text-sm font-medium text-cyan-300 mb-4">Universidad Piloto de Colombia</p>
+                    <p class="text-sm text-zinc-400 font-light leading-relaxed mt-auto">Formación integral en psicología con enfoque en el comportamiento organizacional y desarrollo humano (Jul 2008 - Nov 2013).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Habilidades Section -->
+        <section id="habilidades" class="w-full pt-10">
+            <div class="mb-8 sm:mb-12 reveal">
+                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Aptitudes & Herramientas</h2>
+                <p class="text-zinc-400 text-sm sm:text-base">Mis fortalezas técnicas y blandas en la gestión humana.</p>
+            </div>
+
+            <div class="flex flex-wrap gap-2 sm:gap-3 reveal">
+                <span class="px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/[0.03] border border-white/10 text-xs sm:text-sm font-medium text-zinc-300 hover:bg-white/10 hover:border-purple-500/50 transition-all cursor-default">People Analytics & Power BI</span>
+                <span class="px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/[0.03] border border-white/10 text-xs sm:text-sm font-medium text-zinc-300 hover:bg-white/10 hover:border-purple-500/50 transition-all cursor-default">Employee Experience (EX/CX)</span>
+                <span class="px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/[0.03] border border-white/10 text-xs sm:text-sm font-medium text-zinc-300 hover:bg-white/10 hover:border-purple-500/50 transition-all cursor-default">Administración por Objetivos</span>
+                <span class="px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/[0.03] border border-white/10 text-xs sm:text-sm font-medium text-zinc-300 hover:bg-white/10 hover:border-purple-500/50 transition-all cursor-default">Liderazgo Transformacional</span>
+                <span class="px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/[0.03] border border-white/10 text-xs sm:text-sm font-medium text-zinc-300 hover:bg-white/10 hover:border-purple-500/50 transition-all cursor-default">Design Thinking & Innovación</span>
+                <span class="px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/[0.03] border border-white/10 text-xs sm:text-sm font-medium text-zinc-300 hover:bg-white/10 hover:border-purple-500/50 transition-all cursor-default">Atracción de Talento</span>
+                <span class="px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/[0.03] border border-white/10 text-xs sm:text-sm font-medium text-zinc-300 hover:bg-white/10 hover:border-purple-500/50 transition-all cursor-default">Desarrollo Organizacional (L&D)</span>
+                <span class="px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/[0.03] border border-white/10 text-xs sm:text-sm font-medium text-zinc-300 hover:bg-white/10 hover:border-purple-500/50 transition-all cursor-default">Resolución de Problemas</span>
+                <span class="px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/[0.03] border border-white/10 text-xs sm:text-sm font-medium text-zinc-300 hover:bg-white/10 hover:border-purple-500/50 transition-all cursor-default">Pensamiento Crítico</span>
+                <span class="px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/[0.03] border border-white/10 text-xs sm:text-sm font-medium text-zinc-300 hover:bg-white/10 hover:border-purple-500/50 transition-all cursor-default">Gamificación</span>
+                <span class="px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/[0.03] border border-white/10 text-xs sm:text-sm font-medium text-zinc-300 hover:bg-white/10 hover:border-purple-500/50 transition-all cursor-default">Metodologías Ágiles (Scrum)</span>
+                <span class="px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/[0.03] border border-white/10 text-xs sm:text-sm font-medium text-zinc-300 hover:bg-white/10 hover:border-purple-500/50 transition-all cursor-default">Psicometría (DISC, 16PF)</span>
+                <span class="px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/[0.03] border border-white/10 text-xs sm:text-sm font-medium text-zinc-300 hover:bg-white/10 hover:border-purple-500/50 transition-all cursor-default">Resiliencia y Perseverancia</span>
+            </div>
+        </section>
+        
+        <!-- Contacto Section -->
+        <section id="contacto" class="w-full pt-10 pb-10 reveal">
+            <div class="glass-card rounded-3xl sm:rounded-[2.5rem] p-8 sm:p-16 text-center relative overflow-hidden flex flex-col items-center">
+                <div class="absolute inset-0 bg-gradient-to-b from-purple-900/10 to-transparent pointer-events-none"></div>
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 sm:mb-6 relative z-10 tracking-tight">¿Listo para innovar en tu talento?</h2>
+                <p class="text-zinc-400 mb-8 sm:mb-10 max-w-xl mx-auto relative z-10 font-light text-sm sm:text-lg">
+                    Lideremos juntos la transformación digital y cultural de tu organización, potenciando la experiencia humana con estrategias data-driven.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 relative z-10 w-full sm:w-auto">
+                    <a href="https://wa.me/573105643224" target="_blank" class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-[#25D366] text-white font-semibold hover:scale-105 transition-transform shadow-[0_0_30px_rgba(37,211,102,0.3)]">
+                        WhatsApp
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.099.824zm-3.423-14.416c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm.029 18.88c-1.161 0-2.305-.292-3.318-.844l-3.677.964.984-3.595c-.607-1.052-.927-2.246-.926-3.468.001-3.825 3.113-6.937 6.937-6.937 3.825 0 6.938 3.112 6.938 6.937 0 3.825-3.113 6.938-6.938 6.938z"/></svg>
+                    </a>
+                    <a href="mailto:ronaldf18@hotmail.com" class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-white text-black font-semibold hover:scale-105 transition-transform shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                        Enviar Email
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="w-full border-t border-white/5 py-8 text-center text-zinc-600 text-xs sm:text-sm mt-auto z-10 bg-[#030303]/80 backdrop-blur-md">
+        <p>&copy; 2024 Ronald Fabian Moreno Guzman. Todos los derechos reservados.</p>
+        <p class="mt-2 opacity-70">Inspirado en ecosistemas modernos • Diseñado para la excelencia</p>
+    </footer>
+
+    <!-- Scripts for Interactivity -->
+    <script>
+        // Mobile Menu Toggle Logic
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        function toggleMenu() {
+            mobileMenu.classList.toggle('menu-open');
+            // Toggle hamburger icon to 'X'
+            const svg = mobileMenuBtn.querySelector('svg');
+            if(mobileMenu.classList.contains('menu-open')) {
+                svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
+            } else {
+                svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
+            }
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleMenu);
+        mobileLinks.forEach(link => link.addEventListener('click', toggleMenu));
+
+        // 1. Scroll Reveal Logic (Intersection Observer)
+        const revealElements = document.querySelectorAll('.reveal');
+        
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    // Optional: Unobserve after revealing
+                    // revealObserver.unobserve(entry.target); 
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // 2. Interactive Particles Network Logic
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let particles = [];
+        
+        // Mouse interaction object
+        let mouse = {
+            x: null,
+            y: null,
+            radius: 150
+        };
+
+        window.addEventListener('mousemove', function(event) {
+            mouse.x = event.x;
+            mouse.y = event.y;
+        });
+
+        window.addEventListener('mouseout', function() {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        // Resize Canvas
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            init(); // Reinitialize particles on resize
+        }
+        window.addEventListener('resize', resize);
+
+        // Particle Class
+        class Particle {
+            constructor(x, y, dx, dy, size) {
+                this.x = x;
+                this.y = y;
+                this.dx = dx;
+                this.dy = dy;
+                this.size = size;
+                this.baseX = this.x;
+                this.baseY = this.y;
+                this.density = (Math.random() * 40) + 1;
+            }
+
+            draw() {
+                // Apple/Tesla style soft glowing orbs instead of hard dots
+                let gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
+                gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.fillStyle = gradient;
+                ctx.fill();
+            }
+
+            update() {
+                // Bounce off edges softly
+                if (this.x + this.size > width || this.x - this.size < 0) this.dx = -this.dx;
+                if (this.y + this.size > height || this.y - this.size < 0) this.dy = -this.dy;
+
+                // Mouse interactivity (parallax pushing)
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                let forceDirectionX = dx / distance;
+                let forceDirectionY = dy / distance;
+                
+                const maxDistance = mouse.radius;
+                let force = (maxDistance - distance) / maxDistance;
+                
+                if (force < 0) force = 0;
+                
+                // Softer physics
+                let directionX = (forceDirectionX * force * this.density) * 0.4;
+                let directionY = (forceDirectionY * force * this.density) * 0.4;
+
+                if (distance < mouse.radius) {
+                    this.x -= directionX;
+                    this.y -= directionY;
+                } else {
+                    // Extremely slow ambient movement
+                    this.x += this.dx * 0.2;
+                    this.y += this.dy * 0.2;
+                }
+
+                this.draw();
+            }
+        }
+
+        // Initialize particles
+        function init() {
+            particles = [];
+            // More particles for the constellation effect
+            let numberOfParticles = (canvas.height * canvas.width) / 9000;
+            
+            // Limit max particles
+            if (numberOfParticles > 120) numberOfParticles = 120;
+
+            for (let i = 0; i < numberOfParticles; i++) {
+                // Smaller size for crisp nodes
+                let size = (Math.random() * 2) + 0.5;
+                let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+                let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                let dx = (Math.random() - 0.5) * 0.8; // Slightly faster
+                let dy = (Math.random() - 0.5) * 0.8;
+                particles.push(new Particle(x, y, dx, dy, size));
+            }
+        }
+
+        // Animation Loop with Constellation Connections
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
+
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+            }
+
+            // Draw connecting lines
+            connectParticles();
+        }
+
+        // Function to draw lines between close particles
+        function connectParticles() {
+            let opacityValue = 1;
+            for (let a = 0; a < particles.length; a++) {
+                for (let b = a; b < particles.length; b++) {
+                    let dx = particles[a].x - particles[b].x;
+                    let dy = particles[a].y - particles[b].y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Interaction radius for connections
+                    if (distance < 120) {
+                        opacityValue = 1 - (distance / 120);
+                        // Using a glowing purple/blue color for the lines
+                        ctx.strokeStyle = `rgba(168, 85, 247, ${opacityValue * 0.5})`; 
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[a].x, particles[a].y);
+                        ctx.lineTo(particles[b].x, particles[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        // Start
+        resize();
+        animate();
+    </script>
+</body>
+</html>
